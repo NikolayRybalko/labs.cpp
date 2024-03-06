@@ -1,103 +1,89 @@
 #include <iostream>
 
-struct Element {
-    double data;
-    Element* next;
+struct Node {
+    double value;
+    Node* nextNode;
 
-    Element(double d = 0.0, Element* n = nullptr) : data(d), next(n) {}
+    Node(double val = 0.0, Node* next = nullptr) : value(val), nextNode(next) {}
 };
 
-class LinkedList {
+class SimpleLinkedList {
 private:
-    Element* head;
-    Element* tail;
+    Node* firstNode;
+    Node* lastNode;
 
 public:
-    LinkedList() : head(nullptr), tail(nullptr) {}
+    SimpleLinkedList() : firstNode(nullptr), lastNode(nullptr) {}
 
-    void addAtEnd(double data) {
-        Element* newElement = new Element(data);
-        if (!head) {
-            head = tail = newElement;
+    void append(double val) {
+        Node* newNode = new Node(val);
+        if (!firstNode) {
+            firstNode = lastNode = newNode;
         } else {
-            tail->next = newElement;
-            tail = newElement;
+            lastNode->nextNode = newNode;
+            lastNode = newNode;
         }
     }
 
-    void addAtStart(double data) {
-        Element* newElement = new Element(data, head);
-        head = newElement;
-        if (!tail) {
-            tail = head;
+    void prepend(double val) {
+        Node* newNode = new Node(val, firstNode);
+        firstNode = newNode;
+        if (!lastNode) {
+            lastNode = firstNode;
         }
     }
 
-    void removeElement(bool first) {
-        if (!head) {
-            std::cout << "List is empty\n";
+    void deleteFrontOrBack(bool isFront) {
+        if (!firstNode) {
+            std::cout << "The list is empty\n";
             return;
         }
-        if (first) {
-            Element* temp = head;
-            head = head->next;
-            if (head == nullptr) tail = nullptr;
+        if (isFront) {
+            Node* temp = firstNode;
+            firstNode = firstNode->nextNode;
+            if (firstNode == nullptr) lastNode = nullptr;
             delete temp;
         } else {
-            if (head == tail) {
-                delete head;
-                head = tail = nullptr;
+            if (firstNode == lastNode) {
+                delete firstNode;
+                firstNode = lastNode = nullptr;
             } else {
-                Element* current = head;
-                while (current->next != tail) {
-                    current = current->next;
+                Node* current = firstNode;
+                while (current->nextNode != lastNode) {
+                    current = current->nextNode;
                 }
-                delete tail;
-                tail = current;
-                tail->next = nullptr;
+                delete lastNode;
+                lastNode = current;
+                lastNode->nextNode = nullptr;
             }
         }
     }
 
-    void display() {
-        Element* current = head;
-        int index = 0;
+    void show() {
+        Node* current = firstNode;
+        int position = 0;
         while (current) {
-            std::cout << "Element " << index++ << ": " << current->data << std::endl;
-            current = current->next;
+            std::cout << "Node " << position++ << ": " << current->value << std::endl;
+            current = current->nextNode;
         }
     }
-
-    // Оставляем методы insertAtIndex, removeAt, findByIndex, findByValue и updateAt без изменений для краткости.
 };
 
 int main() {
-    LinkedList myList;
-    myList.addAtEnd(10);
-    myList.addAtStart(20);
-    myList.addAtEnd(30);
-    myList.display();
+    SimpleLinkedList myList;
+    myList.append(11);
+    myList.prepend(22);
+    myList.append(31);
+    myList.show();
 
-    std::cout << "\nRemoving first...\n\n";
-    myList.removeElement(true); // Удаляем первый элемент
-    myList.display();
+    std::cout << "\nDeleting from the front...\n\n";
+    myList.deleteFrontOrBack(true); // Удаляем первый элемент
+    myList.show();
 
-    std::cout << "\nRemoving last...\n\n";
-    myList.removeElement(false); // Удаляем последний элемент
-    myList.display();
+    std::cout << "\nDeleting from the back...\n\n";
+    myList.deleteFrontOrBack(false); // Удаляем последний элемент
+    myList.show();
 
-    // Пример использования других методов...
     
-    return 0;
-}
-
-    Element* elementWithValue2 = myList.findByValue(2.0);
-    if (elementWithValue2) {
-        std::cout << "Element with value 2.0: " << elementWithValue2->data << std::endl;
-
-    }
-
-    myList.updateAt(1, 25);
-    myList.display();
     return 0;
 }
